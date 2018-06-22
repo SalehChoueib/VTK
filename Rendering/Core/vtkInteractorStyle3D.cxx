@@ -44,7 +44,7 @@ vtkInteractorStyle3D::vtkInteractorStyle3D()
   this->AppliedTranslation[1] = 0;
   this->AppliedTranslation[2] = 0;
   this->TempTransform = vtkTransform::New();
-  this->DollyMotionFactor = 2.0;
+  this->DollyPhysicalSpeed = 60000.0;
 }
 
 //----------------------------------------------------------------------------
@@ -194,7 +194,7 @@ void vtkInteractorStyle3D::Prop3DTransform(vtkProp3D *prop3D,
 
   if ((scale[0] * scale[1] * scale[2]) != 0.0)
   {
-    newTransform->Scale(scale[0], scale[1], scale[2]);
+    newTransform->Scale(scale[0], scale[1], scale[2]); 
   }
 
   newTransform->Translate(boxCenter[0], boxCenter[1], boxCenter[2]);
@@ -246,22 +246,20 @@ void vtkInteractorStyle3D::Dolly3D(vtkEventData *ed)
 
   double *trans = rwi->GetPhysicalTranslation(
     this->CurrentRenderer->GetActiveCamera());
-  double distance = rwi->GetPhysicalScale();
 
-  // The world coordinate speed of
-  // movement can be determined from the camera scale.
-  // movement speed is scaled by the touchpad
-  // y coordinate
-
+  // scale speed by thumb position on the touchpad along Y axis
   float *tpos = rwi->GetTouchPadPosition();
-  // 2.0 so that the max is 2.0 times the average
-  // motion factor
-  double factor = tpos[1]*2.0*this->DollyMotionFactor/90.0;
+  double speedScaleFactor = tpos[1]/90.0;
+
+  this->LastDolly3DEventTime->StopTimer();
+  double PhysicalDistanceTravelled = speedScaleFactor * this->DollyPhysicalSpeed /*mm/sec*/ * this->LastDolly3DEventTime->GetElapsedTime() /*sec*/;
+  this->LastDolly3DEventTime->StartTimer();
+  
   rwi->SetPhysicalTranslation(
     this->CurrentRenderer->GetActiveCamera(),
-    trans[0]-vdir[0]*factor*distance,
-    trans[1]-vdir[1]*factor*distance,
-    trans[2]-vdir[2]*factor*distance);
+    trans[0]-vdir[0]*PhysicalDistanceTravelled,
+    trans[1]-vdir[1]*PhysicalDistanceTravelled,
+    trans[2]-vdir[2]*PhysicalDistanceTravelled);
 
   if (this->AutoAdjustCameraClippingRange)
   {
@@ -271,6 +269,8 @@ void vtkInteractorStyle3D::Dolly3D(vtkEventData *ed)
 
 void vtkInteractorStyle3D::SetScale(vtkCamera *camera, double newDistance)
 {
+ 
+
   vtkRenderWindowInteractor3D *rwi =
     static_cast<vtkRenderWindowInteractor3D *>(this->Interactor);
 
@@ -280,8 +280,9 @@ void vtkInteractorStyle3D::SetScale(vtkCamera *camera, double newDistance)
   double *pos = camera->GetPosition();
   double hmd[3];
   hmd[0] = (pos[0] + trans[0])/distance;
-  hmd[1] = (pos[1] + trans[1])/distance;
+  hmd[1] = (pos[1] + trans[1])/distance; 
   hmd[2] = (pos[2] + trans[2])/distance;
+
 
   // cerr << "dyf " << dyf << "\n";
   // rwi->SetPhysicalTranslation(camera,

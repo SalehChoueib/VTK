@@ -41,6 +41,8 @@ PURPOSE.  See the above copyright notice for more information.
 
 #include "vtkRenderingOpenVRModule.h" // For export macro
 #include "vtkOpenGLRenderWindow.h"
+#include "vtkInteractorStyle3D.h"
+
 
 #include <openvr.h> // for ivars
 #include <vector> // ivars

@@ -21,6 +21,7 @@ https://github.com/ValveSoftware/openvr/blob/master/LICENSE
 #include "vtkCommand.h"
 #include "vtkFloatArray.h"
 #include "vtkIdList.h"
+#include "vtkInteractorStyle3D.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkOpenGLError.h"
@@ -44,6 +45,7 @@ https://github.com/ValveSoftware/openvr/blob/master/LICENSE
 #include "vtkShaderProgram.h"
 #include "vtkTextureObject.h"
 #include "vtkTransform.h"
+
 
 #include <cmath>
 #include <sstream>

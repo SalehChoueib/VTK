@@ -272,7 +272,7 @@ void vtkOpenVRMenuRepresentation::BuildRepresentation()
       renWin->GetPhysicalViewDirection(this->PlacedDOP);
     }
     vtkMath::Cross(this->PlacedDOP,this->PlacedVUP,this->PlacedVRight);
-
+  
     vtkNew<vtkMatrix4x4> rot;
     for (int i = 0; i < 3; ++i)
     {

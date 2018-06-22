@@ -127,6 +127,7 @@ void vtkOpenVRRenderWindowInteractor::ConvertPoseToWorldCoordinates(
   ppos[1] = pos[0]*vright[1] + pos[1]*vup[1] - pos[2]*dop[1];
   ppos[2] = pos[0]*vright[2] + pos[1]*vup[2] - pos[2]*dop[2];
   // now adjust for scale and translation
+   
   for (int i = 0; i < 3; i++)
   {
     pos[i] = ppos[i]*distance - trans[i];

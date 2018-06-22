@@ -96,8 +96,7 @@ void vtkOpenVRRenderer::DeviceRender()
     vtkOpenVRRenderWindow *win =
       static_cast<vtkOpenVRRenderWindow *>(this->GetRenderWindow());
 
-    double distance = win->GetPhysicalScale();
-
+    double distance = win->GetPhysicalScale(); 
     double trans[3];
     win->GetPhysicalTranslation(trans);
 
@@ -228,7 +227,7 @@ void vtkOpenVRRenderer::ResetCamera(double bounds[6])
       angle=2.0*atan(tan(angle*0.5)*aspect[0]);
     }
   }
-  distance =radius/sin(angle*0.5);
+  distance = radius/sin(angle*0.5);
 
   // check view-up vector against view plane normal
   vup = this->ActiveCamera->GetViewUp();

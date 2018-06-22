@@ -57,10 +57,11 @@ public:
   // position and focal point.  Factor is typically
   // 1.0 to add or -1.0 to subtract
   void ApplyEyePose(vtkOpenVRRenderWindow *, bool left, double factor);
-
+  
   // Get the OpenVR Physical Space to World coordinate matrix
   vtkTransform *GetPhysicalToWorldTransform() {
-    return this->PoseTransform.Get(); }
+    return this->PoseTransform.Get(); } //returns a transformation matrix as described by 
+                                        //PoseTranform. 
 
 protected:
   vtkOpenVRCamera();

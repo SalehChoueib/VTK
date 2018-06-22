@@ -438,6 +438,7 @@ void vtkOpenVRInteractorStyle::StartDolly3D(vtkEventDataDevice3D * ed)
   }
   vtkEventDataDevice dev = ed->GetDevice();
   this->InteractionState[static_cast<int>(dev)] = VTKIS_DOLLY;
+  this->LastDolly3DEventTime->StartTimer();
 
   // this->GrabFocus(this->EventCallbackCommand);
 }
@@ -653,7 +654,7 @@ void vtkOpenVRInteractorStyle::OnPan()
       rwi->GetTranslation3D()[2] - rwi->GetLastTranslation3D()[2]};
 
     double *ptrans = rwi->GetPhysicalTranslation(camera);
-    double distance = rwi->GetPhysicalScale();
+    double distance = rwi->GetPhysicalScale() ;
 
     rwi->SetPhysicalTranslation(camera,
       ptrans[0] + t[0] * distance,
@@ -695,7 +696,7 @@ void vtkOpenVRInteractorStyle::OnPinch()
     double distance = rwi->GetPhysicalScale();
 
     this->SetScale(camera, distance / dyf);
-
+    
   }
 }
 //----------------------------------------------------------------------------
@@ -975,7 +976,7 @@ void vtkOpenVRInteractorStyle::ShowBillboard(const std::string &text)
   this->TextActor3D->RotateX(-30.0);
 
   double tpos[3];
-  double scale = renWin->GetPhysicalScale();
+  double scale = renWin->GetPhysicalScale()*10;
   ren->GetActiveCamera()->GetPosition(tpos);
   tpos[0] += (0.7*scale*dop[0] - 0.1*scale*vr[0] - 0.4*scale*vup[0]);
   tpos[1] += (0.7*scale*dop[1] - 0.1*scale*vr[1] - 0.4*scale*vup[1]);

@@ -122,7 +122,7 @@ void vtkOpenVRCamera::GetHMDEyeProjections(vtkRenderer *ren)
 
 void vtkOpenVRCamera::ApplyEyePose(vtkOpenVRRenderWindow *win, bool left, double factor)
 {
-  double distance = win->GetPhysicalScale();
+  double physicalScale = win->GetPhysicalScale();
 
   double *dop = this->GetDirectionOfProjection();
   double *vup = this->GetViewUp();
@@ -131,9 +131,9 @@ void vtkOpenVRCamera::ApplyEyePose(vtkOpenVRRenderWindow *win, bool left, double
 
   double *offset = (left ? this->LeftEyePose : this->RightEyePose);
   double newOffset[3];
-  newOffset[0] = factor*(offset[0]*vright[0] + offset[1]*vup[0] - offset[2]*dop[0])*distance;
-  newOffset[1] = factor*(offset[0]*vright[1] + offset[1]*vup[1] - offset[2]*dop[1])*distance;
-  newOffset[2] = factor*(offset[0]*vright[2] + offset[1]*vup[2] - offset[2]*dop[2])*distance;
+  newOffset[0] = factor*(offset[0]*vright[0] + offset[1]*vup[0] - offset[2]*dop[0])*physicalScale;
+  newOffset[1] = factor*(offset[0]*vright[1] + offset[1]*vup[1] - offset[2]*dop[1])*physicalScale;
+  newOffset[2] = factor*(offset[0]*vright[2] + offset[1]*vup[2] - offset[2]*dop[2])*physicalScale;
   double *pos = this->GetPosition();
   this->SetPosition(pos[0]+newOffset[0], pos[1] + newOffset[1], pos[2] + newOffset[2]);
   double *fp = this->GetFocalPoint();
@@ -217,6 +217,7 @@ void vtkOpenVRCamera::GetKeyMatrices(vtkRenderer *ren, vtkMatrix4x4 *&wcvc,
       this->MTime > this->KeyMatrixTime ||
       ren->GetMTime() > this->KeyMatrixTime)
   {
+
     vtkMatrix4x4 *w2v = this->GetModelViewTransformMatrix();
     this->WCVCMatrix->DeepCopy(w2v);
 
@@ -243,14 +244,13 @@ void vtkOpenVRCamera::GetKeyMatrices(vtkRenderer *ren, vtkMatrix4x4 *&wcvc,
         vtkOpenVRRenderWindow::SafeDownCast(ren->GetRenderWindow());
 
       vtkMatrix4x4::Multiply4x4(this->WCVCMatrix, this->LeftEyeProjection, this->WCDCMatrix);
-
       // build the tracking to device coordinate matrix
       this->PoseTransform->Identity();
       double trans[3];
       win->GetPhysicalTranslation(trans);
       this->PoseTransform->Translate(-trans[0],-trans[1],-trans[2]);
-      double scale = win->GetPhysicalScale();
-      this->PoseTransform->Scale(scale,scale,scale);
+      double scale = win->GetPhysicalScale() ;
+      this->PoseTransform->Scale(scale,scale,scale); 
 
       // deal with Vive to World rotations
       double *vup = win->GetPhysicalViewUp();
@@ -264,13 +264,14 @@ void vtkOpenVRCamera::GetKeyMatrices(vtkRenderer *ren, vtkMatrix4x4 *&wcvc,
         0.0, 0.0, 0.0, 1.0};
 
       this->PoseTransform->Concatenate(rot);
-
+     
       this->LeftEyeTCDCMatrix->DeepCopy(this->PoseTransform->GetMatrix());
       this->LeftEyeTCDCMatrix->Transpose();
 
       vtkMatrix4x4::Multiply4x4(this->LeftEyeTCDCMatrix,
         this->WCDCMatrix,
         this->LeftEyeTCDCMatrix);
+
     }
     else
     {
